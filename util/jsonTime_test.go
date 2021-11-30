@@ -105,3 +105,23 @@ func TestTimeToJsonSec(t *testing.T) {
 
 	fmt.Printf("OK! %v->%v->%v", tm, string(j), tm2)
 }
+
+func TestEmbeddedStruct(t *testing.T) {
+
+	type Inner struct {
+		Data string `json:"jData"`
+	}
+
+	type Outer struct {
+		Inner `json:"jInner"`
+		Num   int `json:"jNum"`
+	}
+
+	o := Outer{
+		Inner: Inner{Data: "I'm inner"},
+		Num:   6,
+	}
+
+	j, _ := json.Marshal(o)
+	fmt.Printf("OK! %v->%v", o, string(j)) //OK! {{I'm inner} 6}->{"jInner":{"jData":"I'm inner"},"jNum":6}
+}
