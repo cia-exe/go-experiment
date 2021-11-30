@@ -6,16 +6,7 @@ import (
 )
 
 func Test_main(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			main()
-		})
-	}
+	main()
 }
 
 func TestColorLog(t *testing.T) {
@@ -41,6 +32,8 @@ func TestColorLog(t *testing.T) {
 	println("\u001b[41;1mERR:\u001b[0m @xxxxxxx@")
 
 }
+
+//--------------------------------
 
 type ClassX struct {
 	x   int
