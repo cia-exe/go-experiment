@@ -119,13 +119,14 @@ func TestEmbeddedStruct(t *testing.T) {
 		}
 
 		o := Outer{
+			//InnerData: "I'm inner",  // error: unknown field. (We cannot init Outer.InnerData!)
 			Inner: Inner{InnerData: "I'm inner"},
 			Num:   66,
 		}
 
 		j, _ := json.Marshal(o)
 		fmt.Printf("OK1! %v->%v\n", o, string(j))
-		fmt.Println("InnerData1=", o.Inner.InnerData, "==", o.InnerData)
+		fmt.Println("InnerData1=", o.Inner.InnerData, "==", o.InnerData) // We can access Outer.InnerData!
 	}
 
 	{
@@ -177,4 +178,44 @@ func TestEmbeddedStruct(t *testing.T) {
 	// InnerData1= I'm inner == I'm inner
 	// InnerData2= I'm inner == I'm inner
 	// InnerData3= I'm inner == I'm inner2
+}
+
+func TestEmbeddedArray(t *testing.T) {
+
+	type Inner []int
+
+	{
+		type Outer struct {
+			Inner   `json:"jInData"`
+			OutData int `json:"jOutData"`
+		}
+
+		o := Outer{
+			Inner:   Inner{1, 2, 3, 4, 5},
+			OutData: 77,
+		}
+
+		j, _ := json.Marshal(o)
+		fmt.Printf("OK1! %v->%v\n", o, string(j))
+	}
+
+	{
+		type Outer struct {
+			Inner       //`json:"jInData"`
+			OutData int `json:"jOutData"`
+		}
+
+		o := Outer{
+			Inner:   Inner{1, 2, 3, 4, 5},
+			OutData: 77,
+		}
+
+		j, _ := json.Marshal(o)
+		fmt.Printf("OK2! %v->%v\n", o, string(j))
+	}
+
+	// output:
+	// OK1! {[1 2 3 4 5] 77}->{"jInData":[1,2,3,4,5],"jOutData":77}
+	// OK2! {[1 2 3 4 5] 77}->{"Inner":[1,2,3,4,5],"jOutData":77}
+
 }
