@@ -109,19 +109,72 @@ func TestTimeToJsonSec(t *testing.T) {
 func TestEmbeddedStruct(t *testing.T) {
 
 	type Inner struct {
-		Data string `json:"jData"`
+		InnerData string `json:"jInnerData"`
 	}
 
-	type Outer struct {
-		Inner `json:"jInner"`
-		Num   int `json:"jNum"`
+	{
+		type Outer struct {
+			Inner `json:"jInner"`
+			Num   int `json:"jNum"`
+		}
+
+		o := Outer{
+			Inner: Inner{InnerData: "I'm inner"},
+			Num:   66,
+		}
+
+		j, _ := json.Marshal(o)
+		fmt.Printf("OK1! %v->%v\n", o, string(j))
+		fmt.Println("InnerData1=", o.Inner.InnerData, "==", o.InnerData)
 	}
 
-	o := Outer{
-		Inner: Inner{Data: "I'm inner"},
-		Num:   6,
+	{
+		type Outer struct {
+			Inner     // `json:"jInner"`
+			Num   int `json:"jNum"`
+		}
+
+		o := Outer{
+			Inner: Inner{InnerData: "I'm inner"},
+			Num:   77,
+		}
+
+		j, _ := json.Marshal(o)
+		fmt.Printf("OK2! %v->%v\n", o, string(j))
+		fmt.Println("InnerData2=", o.Inner.InnerData, "==", o.InnerData)
 	}
 
-	j, _ := json.Marshal(o)
-	fmt.Printf("OK! %v->%v", o, string(j)) //OK! {{I'm inner} 6}->{"jInner":{"jData":"I'm inner"},"jNum":6}
+	{ // Test 2 inner structures with the same field name.
+
+		type Inner2 struct {
+			InnerData string `json:"jInnerData"`
+		}
+
+		type Outer struct {
+			Inner      // `json:"jInner"`
+			Inner2     // `json:"jInner"` // Compile Warning: struct field InnerData repeats json tag "jInnerData" also at jsonTime_test.go:112
+			Num    int `json:"jNum"`
+		}
+
+		o := Outer{
+			Inner:  Inner{InnerData: "I'm inner"},
+			Inner2: Inner2{InnerData: "I'm inner2"},
+			Num:    77,
+		}
+
+		j, _ := json.Marshal(o)
+		fmt.Printf("OK3! %v->%v\n", o, string(j))
+		fmt.Println("InnerData3=", o.Inner.InnerData, "==", o.Inner2.InnerData)
+		// fmt.Println(o.InnerData) // error: ambiguous selector o.InnerData
+
+	}
+
+	// output:
+	// OK1! {{I'm inner} 66}->{"jInner":{"jInnerData":"I'm inner"},"jNum":66}
+	// OK2! {{I'm inner} 77}->{"jInnerData":"I'm inner","jNum":77}
+	// OK3! {{I'm inner} {I'm inner2} 77}->{"jNum":77}  // missing Inner and Inner2 in json string
+
+	// InnerData1= I'm inner == I'm inner
+	// InnerData2= I'm inner == I'm inner
+	// InnerData3= I'm inner == I'm inner2
 }
