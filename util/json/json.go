@@ -48,6 +48,11 @@ func (t TimeMs) String() string {
 	//return fmt.Sprintf("[%v]", t.UTC()) // [2021-08-30 09:48:25 +0000 UTC]
 }
 
+func (t TimeMs) Equal(u TimeMs) bool {
+	return t.UnixMilli() == u.UnixMilli() // Precision in milliseconds
+	//return time.Time(t).Equal(time.Time(u)) // t.nsec() != u.nsec()
+}
+
 //------------------------- JsonTimeSec
 
 // MarshalJSON is used to convert the timestamp to JSON
@@ -82,28 +87,38 @@ func (t TimeSec) String() string {
 	return t.UTC().Format("[06/01/02 15:04:05]") // [21/08/30 09:48:25]
 }
 
+func (t TimeSec) Equal(u TimeSec) bool {
+	return t.Unix() == u.Unix() // Precision in seconds
+	//return time.Time(t).Equal(time.Time(u)) // t.nsec() != u.nsec()
+}
+
 //---------------------------------------
 
-type StrUint64 uint64 // json string to uint64
+// defines a Int encoded as "1234567" in JSON
+type IntStr int64 // json string to uint64
 
-func (u *StrUint64) UnmarshalJSON(bs []byte) (err error) {
+func (i IntStr) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.FormatInt(int64(i), 10)), nil // seconds
+}
 
-	str := string(bs) // Parse plain numbers directly.
-	if bs[0] == '"' && bs[len(bs)-1] == '"' {
+func (i *IntStr) UnmarshalJSON(b []byte) (err error) {
+
+	str := string(b) // Parse plain numbers directly.
+	if b[0] == '"' && b[len(b)-1] == '"' {
 		// Unwrap the quotes from string numbers.
-		str = string(bs[1 : len(bs)-1])
+		str = string(b[1 : len(b)-1])
 	}
 
 	if str == "" {
-		*u = StrUint64(0)
+		*i = IntStr(0)
 		return
 	}
 
-	x, err := strconv.ParseUint(str, 10, 64)
+	x, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
 		fmt.Printf("[%v] str=\"%v\"\n", err, str)
 		return
 	}
-	*u = StrUint64(x)
+	*i = IntStr(x)
 	return
 }

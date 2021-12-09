@@ -73,18 +73,22 @@ func TestTimeToJsonMs(t *testing.T) {
 	tm := TimeMs(time.Now())
 	tm2 := TimeMs{}
 
-	j, _ := json.Marshal(&tm)
-
-	if err := json.Unmarshal(j, &tm2); err != nil {
-		fmt.Println("!!!", err)
+	j, err := json.Marshal(&tm)
+	if err != nil {
+		t.Error("!!!", err)
 		return
 	}
 
-	if tm != tm2 {
-		fmt.Println("!!! not equal !")
+	if err = json.Unmarshal(j, &tm2); err != nil {
+		t.Error("!!!", err)
+		return
 	}
 
-	fmt.Printf("OK! %v->%v->%v", &tm, string(j), &tm2)
+	if !tm.Equal(tm2) {
+		t.Error("!!! not equal !", tm, tm2)
+	}
+
+	fmt.Printf("OK! %v->%v->%v\n", &tm, string(j), &tm2)
 }
 
 func TestTimeToJsonSec(t *testing.T) {
@@ -92,18 +96,82 @@ func TestTimeToJsonSec(t *testing.T) {
 	tm := TimeSec(time.Now())
 	tm2 := TimeSec{}
 
-	j, _ := json.Marshal(&tm)
-
-	if err := json.Unmarshal(j, &tm2); err != nil {
-		fmt.Println("!!!", err)
+	j, err := json.Marshal(&tm)
+	if err != nil {
+		t.Error("!!!", err)
 		return
 	}
 
-	if tm != tm2 {
-		fmt.Println("!!! not equal !")
+	if err = json.Unmarshal(j, &tm2); err != nil {
+		t.Error("!!!", err)
+		return
 	}
 
-	fmt.Printf("OK! %v->%v->%v", tm, string(j), tm2)
+	if !tm.Equal(tm2) {
+		t.Error("!!! not equal !", tm, tm2)
+	}
+
+	fmt.Printf("OK! %v->%v->%v\n", tm, string(j), tm2)
+}
+
+func TestIntToJsonStr(t *testing.T) {
+
+	test := func(i int) (err error) {
+		x := IntStr(i)
+
+		j, err := json.Marshal(x)
+		if err != nil {
+			t.Error("!!!", err)
+			return
+		}
+
+		var y IntStr
+		if err = json.Unmarshal(j, &y); err != nil {
+			t.Error("!!!", err)
+			return
+		}
+
+		if x != y {
+			t.Error("!!! not equal !")
+		}
+
+		fmt.Printf("OK! int(%d)->str(%s)->int(%d)\n", x, string(j), y)
+		return
+
+	}
+
+	test(0)
+	test(12345678)
+	test(-12345678)
+
+	//--------------------------
+	testQuotes := func(x string) {
+
+		q := fmt.Sprintf(`"%s"`, x) // test with quotes
+
+		var tmp IntStr
+		if err := json.Unmarshal([]byte(q), &tmp); err != nil {
+			t.Error("!!!", err)
+			return
+		}
+
+		y, err := json.Marshal(tmp)
+		if err != nil {
+			t.Error("!!!", err)
+			return
+		}
+
+		strY := string(y)
+		if x != strY {
+			t.Error("!!! not equal !", x, strY)
+		}
+
+		fmt.Printf("OK! str(%s)->int(%d)->str(%s)\n", q, tmp, strY)
+	}
+
+	testQuotes("0")
+	testQuotes("98765432")
+	testQuotes("-98765432")
 }
 
 func TestEmbeddedStruct(t *testing.T) {
