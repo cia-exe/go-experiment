@@ -1,4 +1,4 @@
-package util
+package json
 
 import (
 	"fmt"
@@ -6,20 +6,20 @@ import (
 	"time"
 )
 
-// JsonTimeMs defines a timestamp encoded as epoch milliseconds/seconds in JSON
-type JsonTimeMs time.Time  //milliseconds
-type JsonTimeSec time.Time // seconds
+// TimeMs defines a timestamp encoded as epoch milliseconds/seconds in JSON
+type TimeMs time.Time  //milliseconds
+type TimeSec time.Time // seconds
 
 //------------------------- JsonTimeMs
 
 // MarshalJSON is used to convert the timestamp to JSON
-func (t JsonTimeMs) MarshalJSON() ([]byte, error) {
+func (t TimeMs) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(t.UnixMilli(), 10)), nil // milliseconds
 	//return []byte(strconv.FormatInt(t.Unix(), 10)), nil	 // seconds
 }
 
 // UnmarshalJSON is used to convert the timestamp from JSON
-func (t *JsonTimeMs) UnmarshalJSON(s []byte) (err error) {
+func (t *TimeMs) UnmarshalJSON(s []byte) (err error) {
 	r := string(s)
 	q, err := strconv.ParseInt(r, 10, 64)
 	if err != nil {
@@ -30,17 +30,17 @@ func (t *JsonTimeMs) UnmarshalJSON(s []byte) (err error) {
 	return nil
 }
 
-func (t JsonTimeMs) UnixMilli() int64 {
+func (t TimeMs) UnixMilli() int64 {
 	return time.Time(t).UnixMilli()
 }
 
 // UTC returns the JSON time as a time.UTC instance in UTC
-func (t JsonTimeMs) UTC() time.Time {
+func (t TimeMs) UTC() time.Time {
 	return time.Time(t).UTC()
 }
 
 // String returns t as a formatted string
-func (t JsonTimeMs) String() string {
+func (t TimeMs) String() string {
 
 	// The reference time used in these layouts is the specific time stamp: 01/02 03:04:05PM '06 -0700
 	return t.UTC().Format("[06/01/02 15:04:05.000]") // [21/08/30 09:48:25.1234]
@@ -51,12 +51,12 @@ func (t JsonTimeMs) String() string {
 //------------------------- JsonTimeSec
 
 // MarshalJSON is used to convert the timestamp to JSON
-func (t JsonTimeSec) MarshalJSON() ([]byte, error) {
+func (t TimeSec) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(t.Unix(), 10)), nil // seconds
 }
 
 // UnmarshalJSON is used to convert the timestamp from JSON
-func (t *JsonTimeSec) UnmarshalJSON(s []byte) (err error) {
+func (t *TimeSec) UnmarshalJSON(s []byte) (err error) {
 	r := string(s)
 	q, err := strconv.ParseInt(r, 10, 64)
 	if err != nil {
@@ -66,17 +66,17 @@ func (t *JsonTimeSec) UnmarshalJSON(s []byte) (err error) {
 	return nil
 }
 
-func (t JsonTimeSec) Unix() int64 {
+func (t TimeSec) Unix() int64 {
 	return time.Time(t).Unix()
 }
 
 // UTC returns the JSON time as a time.UTC instance in UTC
-func (t JsonTimeSec) UTC() time.Time {
+func (t TimeSec) UTC() time.Time {
 	return time.Time(t).UTC()
 }
 
 // String returns t as a formatted string
-func (t JsonTimeSec) String() string {
+func (t TimeSec) String() string {
 
 	// The reference time used in these layouts is the specific time stamp: 01/02 03:04:05PM '06 -0700
 	return t.UTC().Format("[06/01/02 15:04:05]") // [21/08/30 09:48:25]

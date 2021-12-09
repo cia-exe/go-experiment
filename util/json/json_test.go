@@ -1,4 +1,4 @@
-package util
+package json
 
 import (
 	"encoding/json"
@@ -70,8 +70,8 @@ func TestSliceToJson(t *testing.T) {
 
 func TestTimeToJsonMs(t *testing.T) {
 
-	tm := JsonTimeMs(time.Now())
-	tm2 := JsonTimeMs{}
+	tm := TimeMs(time.Now())
+	tm2 := TimeMs{}
 
 	j, _ := json.Marshal(tm)
 
@@ -89,8 +89,8 @@ func TestTimeToJsonMs(t *testing.T) {
 
 func TestTimeToJsonSec(t *testing.T) {
 
-	tm := JsonTimeSec(time.Now())
-	tm2 := JsonTimeSec{}
+	tm := TimeSec(time.Now())
+	tm2 := TimeSec{}
 
 	j, _ := json.Marshal(tm)
 
