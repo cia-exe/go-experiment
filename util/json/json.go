@@ -13,7 +13,7 @@ type TimeSec time.Time // seconds
 //------------------------- JsonTimeMs
 
 // MarshalJSON is used to convert the timestamp to JSON
-func (t TimeMs) MarshalJSON() ([]byte, error) {
+func (t *TimeMs) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(t.UnixMilli(), 10)), nil // milliseconds
 	//return []byte(strconv.FormatInt(t.Unix(), 10)), nil	 // seconds
 }
@@ -30,13 +30,13 @@ func (t *TimeMs) UnmarshalJSON(s []byte) (err error) {
 	return nil
 }
 
-func (t TimeMs) UnixMilli() int64 {
-	return time.Time(t).UnixMilli()
+func (t *TimeMs) UnixMilli() int64 {
+	return time.Time(*t).UnixMilli()
 }
 
 // UTC returns the JSON time as a time.UTC instance in UTC
-func (t TimeMs) UTC() time.Time {
-	return time.Time(t).UTC()
+func (t *TimeMs) UTC() time.Time {
+	return time.Time(*t).UTC()
 }
 
 // String returns t as a formatted string
@@ -51,7 +51,7 @@ func (t TimeMs) String() string {
 //------------------------- JsonTimeSec
 
 // MarshalJSON is used to convert the timestamp to JSON
-func (t TimeSec) MarshalJSON() ([]byte, error) {
+func (t *TimeSec) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(t.Unix(), 10)), nil // seconds
 }
 
@@ -66,13 +66,13 @@ func (t *TimeSec) UnmarshalJSON(s []byte) (err error) {
 	return nil
 }
 
-func (t TimeSec) Unix() int64 {
-	return time.Time(t).Unix()
+func (t *TimeSec) Unix() int64 {
+	return time.Time(*t).Unix()
 }
 
 // UTC returns the JSON time as a time.UTC instance in UTC
-func (t TimeSec) UTC() time.Time {
-	return time.Time(t).UTC()
+func (t *TimeSec) UTC() time.Time {
+	return time.Time(*t).UTC()
 }
 
 // String returns t as a formatted string

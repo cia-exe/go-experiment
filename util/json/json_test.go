@@ -73,7 +73,7 @@ func TestTimeToJsonMs(t *testing.T) {
 	tm := TimeMs(time.Now())
 	tm2 := TimeMs{}
 
-	j, _ := json.Marshal(tm)
+	j, _ := json.Marshal(&tm)
 
 	if err := json.Unmarshal(j, &tm2); err != nil {
 		fmt.Println("!!!", err)
@@ -84,7 +84,7 @@ func TestTimeToJsonMs(t *testing.T) {
 		fmt.Println("!!! not equal !")
 	}
 
-	fmt.Printf("OK! %v->%v->%v", tm, string(j), tm2)
+	fmt.Printf("OK! %v->%v->%v", &tm, string(j), &tm2)
 }
 
 func TestTimeToJsonSec(t *testing.T) {
@@ -92,7 +92,7 @@ func TestTimeToJsonSec(t *testing.T) {
 	tm := TimeSec(time.Now())
 	tm2 := TimeSec{}
 
-	j, _ := json.Marshal(tm)
+	j, _ := json.Marshal(&tm)
 
 	if err := json.Unmarshal(j, &tm2); err != nil {
 		fmt.Println("!!!", err)
@@ -153,7 +153,7 @@ func TestEmbeddedStruct(t *testing.T) {
 
 		type Outer struct {
 			Inner      // `json:"jInner"`
-			Inner2     // `json:"jInner"` // Compile Warning: struct field InnerData repeats json tag "jInnerData" also at jsonTime_test.go:112
+			Inner2     // `json:"jInner"` // Compile Warning: struct field InnerData repeats json tag "jInnerData" also at json_test.go:112
 			Num    int `json:"jNum"`
 		}
 
