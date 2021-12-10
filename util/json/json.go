@@ -94,12 +94,14 @@ func (t TimeSec) Equal(u TimeSec) bool {
 
 //---------------------------------------
 
-// defines a Int encoded as "1234567" in JSON
+// Define a Int that can accept numeric string with quotes (but it is not encoded with quotes).
 type IntStr int64 // json string to uint64
 
-func (i IntStr) MarshalJSON() ([]byte, error) {
-	return []byte(strconv.FormatInt(int64(i), 10)), nil // seconds
-}
+// If we do not define it, json.Marshal() will call the method of base type through reflect, which will return a numeric string without quotes too.
+// func (i IntStr) MarshalJSON() ([]byte, error) {
+// 	return json.Marshal(int64(i)) // call the method of bese struct
+// 	//return []byte(strconv.FormatInt(int64(i), 10)), nil // int to str
+// }
 
 func (i *IntStr) UnmarshalJSON(b []byte) (err error) {
 
